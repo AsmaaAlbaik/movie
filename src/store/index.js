@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     moviesList: [],
+    loading: false
   },
   mutations: {
     // this mutation use to put the movies whitch return from the fecth action  
@@ -16,12 +17,14 @@ export default new Vuex.Store({
     // this mutation use to push a new movie to the moviesList array  
     setMovieItem: (state, payload) => {
       state.moviesList.push(payload)
+    },
+    setLoading: (state, payload) => {
+      state.loading = payload
     }
   },
   actions: {
     fetchMovieList: ({ commit }, payload) => {
-      // commit("setLoading", true);
-      // commit("clearError");
+      commit("setLoading", true);
       firebase
         .database().ref('movies')
         .once('value')
@@ -41,16 +44,15 @@ export default new Vuex.Store({
             });
           }
           commit("getMovieList", moviesList);
+          commit("setLoading", false);
         })
         .catch((err) => {
-          // commit("setLoading", false);
-          // commit("setError", err);
+          commit("setLoading", false);
           console.log(err);
         });
     },
     AddMovieItem: ({ commit }, payload) => {
-      // commit("setLoading", true);
-      // commit("clearError");
+      commit("setLoading", true);
       return firebase
         .database().ref('movies')
         .push(payload)
@@ -60,12 +62,11 @@ export default new Vuex.Store({
             ...payload,
             id: key
           });
-          // commit("setLoading", false);
+          commit("setLoading", false);
           return 'success';
         })
         .catch((err) => {
-          // commit("setLoading", false);
-          // commit("setError", err);
+          commit("setLoading", false);
           console.log(err);
           return err;
         });
@@ -87,6 +88,9 @@ export default new Vuex.Store({
         });
       };
     },
+    loading(state) {
+      return state.loading
+    }
   },
   modules: {
   }

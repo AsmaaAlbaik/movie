@@ -14,9 +14,6 @@ export default {
 		NavbarApp,
 		FooterApp,
 	},
-	created() {
-		this.$store.dispatch('fetchMovieList');
-	},
 };
 </script>
 

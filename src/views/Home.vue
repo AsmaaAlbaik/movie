@@ -68,7 +68,7 @@
 		</div>
 		<div class="container">
 			<div class="movies pt-5 pb-5">
-				<div class="row">
+				<div class="row" v-if="!loading">
 					<card-item
 						v-for="movie in filteredList"
 						:key="movie.id"
@@ -78,13 +78,20 @@
 									(selectedRate == '' &&
 										(movie.genre
 											.toLowerCase()
-											.indexOf(selectedGenre.toLowerCase()) != -1 ||
+											.indexOf(selectedGenre.toLowerCase()) > 0 ||
 											selectedGenre == '')))
 						"
 						:movie="movie"
 					>
 					</card-item>
 					<!-- <p class="text-center" v-else>no results found</p> -->
+				</div>
+				<div v-else class="text-center">
+					<b-icon
+						icon="arrow-clockwise"
+						animation="spin"
+						font-scale="4"
+					></b-icon>
 				</div>
 			</div>
 			<!-- <input type="text" v-model="movie.title" />
@@ -135,13 +142,12 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['getMoviesList']),
+		...mapGetters(['getMoviesList', 'loading']),
 		filteredList() {
 			return this.getMoviesList.filter((movie) => {
 				return movie.title.toLowerCase().includes(this.search.toLowerCase());
 			});
 		},
-		checkSelectBox() {},
 	},
 	methods: {
 		AddMovieItem() {
@@ -192,9 +198,7 @@ export default {
 		HeaderApp,
 		CardItem,
 	},
-	created() {
-	
-	},
+	created() {},
 };
 </script>
 <style lang="scss" scoped>

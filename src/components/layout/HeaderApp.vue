@@ -14,11 +14,21 @@
 			@sliding-end="onSlideEnd"
 		>
 			<!-- Text slides with image -->
-			<b-carousel-slide v-for="movie in sliderMovie" :key="movie.id"
-				:caption="movie.title"
-				:img-src="movie.bigImage"
-			></b-carousel-slide>
-
+			<template v-if="!loading">
+				<router-link
+					v-for="movie in sliderMovie"
+					:key="movie.id"
+					:to="'/movie-details/' + movie.id"
+				>
+					<b-carousel-slide
+						:caption="movie.title"
+						:img-src="movie.bigImage"
+					></b-carousel-slide>
+				</router-link>
+			</template>
+			<div v-else class="text-center mt-5 pt-5">
+				<b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+			</div>
 		</b-carousel>
 
 		<!-- <p class="mt-4">
@@ -28,7 +38,7 @@
 	</div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 export default {
 	data() {
 		return {
@@ -37,7 +47,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['sliderMovie'])
+		...mapGetters(['sliderMovie', 'loading']),
 	},
 	methods: {
 		onSlideStart(slide) {

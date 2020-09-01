@@ -69,22 +69,15 @@
 		<div class="container">
 			<div class="movies pt-5 pb-5">
 				<div class="row" v-if="!loading">
-					<card-item
-						v-for="movie in filteredList"
-						:key="movie.id"
-						v-if="
-							(selectedYear == movie.year || selectedYear == '') &&
-								(selectedRate == movie.stars ||
-									(selectedRate == '' &&
-										(movie.genre
-											.toLowerCase()
-											.indexOf(selectedGenre.toLowerCase()) > 0 ||
-											selectedGenre == '')))
-						"
-						:movie="movie"
-					>
-					</card-item>
-					<!-- <p class="text-center" v-else>no results found</p> -->
+					<template v-if="filterMovie.length !== 0">
+						<card-item
+							v-for="movie in filterMovie"
+							:key="movie.id"
+							:movie="movie"
+						>
+						</card-item>
+					</template>
+					<p class="text-center" v-else>no results found...</p>
 				</div>
 				<div v-else class="text-center">
 					<b-icon
@@ -94,7 +87,7 @@
 					></b-icon>
 				</div>
 			</div>
-			<!-- <input type="text" v-model="movie.title" />
+			<input type="text" v-model="movie.title" />
 			<input type="text" v-model="movie.genre" />
 			<input type="text" v-model="movie.year" />
 			<input type="text" v-model="movie.stars" />
@@ -102,7 +95,7 @@
 			<input type="file" @change="uploadImage" />
 			<span>big size</span>
 			<input type="file" @change="uploadBigImage" />
-			<button class="btn btn-success" @click="AddMovieItem">save</button> -->
+			<button class="btn btn-success" @click="AddMovieItem">save</button>
 		</div>
 	</div>
 </template>
@@ -128,12 +121,12 @@ export default {
 			search: '',
 			rates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 			genres: [
-				'animation',
-				'action',
-				'adventure',
-				'comedy',
-				'drama',
-				'romantic',
+				'Animation',
+				'Action',
+				'Adventure',
+				'Comedy',
+				'Drama',
+				'Romantic',
 			],
 			selectedYear: '',
 			selectedGenre: '',
@@ -143,10 +136,21 @@ export default {
 	},
 	computed: {
 		...mapGetters(['getMoviesList', 'loading']),
-		filteredList() {
-			return this.getMoviesList.filter((movie) => {
-				return movie.title.toLowerCase().includes(this.search.toLowerCase());
+		filterMovie() {
+			// debugger;
+			let filterdList = this.getMoviesList.filter((movie) => {
+				if (
+					movie.title.toLowerCase().includes(this.search.toLowerCase()) &&
+					(this.selectedYear == movie.year || this.selectedYear == '') &&
+					(this.selectedRate == movie.stars || this.selectedRate == '') &&
+					(movie.genre.toLowerCase().indexOf(this.selectedGenre.toLowerCase()) >=
+						0 ||
+						this.selectedGenre == '')
+				) {
+					return movie;
+				}
 			});
+			return filterdList;
 		},
 	},
 	methods: {

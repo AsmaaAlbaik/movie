@@ -158,11 +158,18 @@ export default {
 		},
 	},
 	directives: { infiniteScroll },
+	watch: {
+		getMoviesList () {
+			// console.log("asmaaaaaaaaaaaaaaa")
+			this.filteredMovie;
+			this.loadMore();
+		}
+	},
 	methods: {
 		loadMore: function() {
 			this.busy = true;
 			setTimeout(() => {
-				console.log('asmaa');
+				// console.log('asmaa');
 				if (this.infiniteScrollList.length == 0) {
 					this.infiniteScrollList = [...this.filteredMovie.slice(0, 4)];
 				}

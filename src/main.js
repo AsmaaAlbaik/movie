@@ -27,7 +27,6 @@ new Vue({
       measurementId: "G-JV28HTZR3P"
     });
     this.$store.dispatch('fetchMovieList');
-
   },
   render: h => h(App)
 }).$mount('#app')

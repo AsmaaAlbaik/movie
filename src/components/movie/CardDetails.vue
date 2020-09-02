@@ -1,7 +1,7 @@
 <template>
 	<div class="container">
 		<div class="movie-details pt-5 pb-5">
-			<div class="row">
+			<div class="row" v-if="loadedMovie !== undefined">
 				<div class="col-md-4">
 					<div class="movie-details__image border-yellow-0">
 						<img :src="loadedMovie.image" :alt="loadedMovie.title" />
@@ -28,6 +28,7 @@
 					</div>
 				</div>
 			</div>
+			<p v-else class="text-center">loading...</p>
 		</div>
 	</div>
 </template>

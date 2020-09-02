@@ -56,7 +56,7 @@ a {
 		color: #5a5a5a;
 	}
 	&__overlay {
-		background-color: rgba(51, 51, 51, 0.5);
+		background-color: rgba(51, 51, 51, 0.7);
 		width: 100%;
 		position: absolute;
 		top: 0;
@@ -64,12 +64,14 @@ a {
 		left: 50%;
 		transform: translateX(-50%);
 		text-align: center;
-		display: none;
+		// display: none;
 		vertical-align: middle;
 		overflow: hidden;
 		border: 3px solid;
 		border-radius: 1rem;
 		height: 380px;
+		opacity: 0;
+		transition: all 0.5s ease-in-out;
 		.content {
 			vertical-align: middle;
 			margin-top: 50%;
@@ -91,7 +93,8 @@ a {
 	}
 	&:hover {
 		.card__overlay {
-			display: block;
+			// display: block;
+			opacity: 1;
 		}
 	}
 }

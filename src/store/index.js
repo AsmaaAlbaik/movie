@@ -7,6 +7,20 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     moviesList: [],
+    // this value should came from the database if we bulit a full system
+    rates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    // this value should come from the database if we bulit a full system
+    genres: [
+      'Animation',
+      'Action',
+      'Adventure',
+      'Comedy',
+      'Drama',
+      'Romance',
+      'Family',
+    ],
+    // this value should come from the database if we bulit a full system
+    years: [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020],
     loading: false
   },
   mutations: {
@@ -88,6 +102,13 @@ export default new Vuex.Store({
         });
       };
     },
+    genres(state) {
+      return state.genres
+    },
+    rates(state) {
+      return state.rates
+    },
+    years(state) { return state.years},
     loading(state) {
       return state.loading
     }

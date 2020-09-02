@@ -50,16 +50,9 @@
 								v-model="selectedYear"
 							>
 								<option value="">All</option>
-								<option value="2000">2000</option>
-								<option value="2005">2005</option>
-								<option value="2006">2006</option>
-								<option value="2010">2010</option>
-								<option value="2012">2012</option>
-								<option value="2015">2015</option>
-								<option value="2016">2016</option>
-								<option value="2018">2018</option>
-								<option value="2019">2019</option>
-								<option value="2020">2020</option>
+								<option v-for="year in years" :value="year" :key="year">{{
+									year
+								}}</option>
 							</select>
 						</div>
 					</div>
@@ -68,26 +61,44 @@
 		</div>
 		<div class="container">
 			<div class="movies pt-5 pb-5">
-				<div class="row" v-if="!loading">
-					<template v-if="filterMovie.length !== 0">
-						<card-item
-							v-for="movie in filterMovie"
-							:key="movie.id"
-							:movie="movie"
-						>
-						</card-item>
-					</template>
-					<p class="text-center" v-else>no results found...</p>
-				</div>
+				<template v-if="!loading">
+					<div
+						class="row"
+						v-infinite-scroll="loadMore"
+						infinite-scroll-disabled="busy"
+						infinite-scroll-distance="4"
+					>
+						<template v-if="filteredMovie.length !== 0">
+							<card-item
+								v-for="movie in infiniteScrollList"
+								:key="movie.id"
+								:movie="movie"
+							>
+							</card-item>
+						</template>
+						<p class="text-center" v-else>no results found...</p>
+						<!-- <p class="text-center" v-if="busy === false">asmaa loading....</p> -->
+					</div>
+				</template>
 				<div v-else class="text-center">
-					<b-icon
+					loading...
+					<!-- <b-icon
 						icon="arrow-clockwise"
 						animation="spin"
 						font-scale="4"
-					></b-icon>
+					></b-icon> -->
 				</div>
+				<!-- <div
+					v-infinite-scroll="loadMore"
+					infinite-scroll-disabled="busy"
+					infinite-scroll-distance="10"
+				>
+					<div v-for="(d, index) in filteredMovie" :key="d.title + index">
+						{{ d.title }}
+					</div>
+				</div> -->
 			</div>
-			<input type="text" v-model="movie.title" />
+			<!-- <input type="text" v-model="movie.title" />
 			<input type="text" v-model="movie.genre" />
 			<input type="text" v-model="movie.year" />
 			<input type="text" v-model="movie.stars" />
@@ -95,7 +106,7 @@
 			<input type="file" @change="uploadImage" />
 			<span>big size</span>
 			<input type="file" @change="uploadBigImage" />
-			<button class="btn btn-success" @click="AddMovieItem">save</button>
+			<button class="btn btn-success" @click="AddMovieItem">save</button> -->
 		</div>
 	</div>
 </template>
@@ -105,10 +116,13 @@
 import HeaderApp from '@/components/layout/HeaderApp';
 import CardItem from '@/components/movie/CardItem';
 import { mapGetters } from 'vuex';
+import infiniteScroll from 'vue-infinite-scroll';
+var count = 0;
 export default {
 	name: 'Home',
 	data() {
 		return {
+			busy: false,
 			movie: {
 				title: 'The Movie title',
 				genre: 'Drama',
@@ -119,41 +133,52 @@ export default {
 				bigImage: '',
 			},
 			search: '',
-			rates: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-			genres: [
-				'Animation',
-				'Action',
-				'Adventure',
-				'Comedy',
-				'Drama',
-				'Romantic',
-			],
 			selectedYear: '',
 			selectedGenre: '',
 			selectedRate: '',
-			asmaa: '',
+			infiniteScrollList: [],
 		};
 	},
 	computed: {
-		...mapGetters(['getMoviesList', 'loading']),
-		filterMovie() {
-			// debugger;
-			let filterdList = this.getMoviesList.filter((movie) => {
+		...mapGetters(['getMoviesList', 'loading', 'genres', 'rates', 'years']),
+		filteredMovie() {
+			return this.getMoviesList.filter((movie) => {
 				if (
 					movie.title.toLowerCase().includes(this.search.toLowerCase()) &&
 					(this.selectedYear == movie.year || this.selectedYear == '') &&
 					(this.selectedRate == movie.stars || this.selectedRate == '') &&
-					(movie.genre.toLowerCase().indexOf(this.selectedGenre.toLowerCase()) >=
-						0 ||
+					(movie.genre
+						.toLowerCase()
+						.indexOf(this.selectedGenre.toLowerCase()) >= 0 ||
 						this.selectedGenre == '')
 				) {
 					return movie;
 				}
 			});
-			return filterdList;
 		},
 	},
+	directives: { infiniteScroll },
 	methods: {
+		loadMore: function() {
+			this.busy = true;
+			setTimeout(() => {
+				console.log('asmaa');
+				if (this.infiniteScrollList.length == 0) {
+					this.infiniteScrollList = [...this.filteredMovie.slice(0, 4)];
+				}
+				if (this.infiniteScrollList.length != this.filteredMovie.length) {
+					this.infiniteScrollList = [
+						...this.infiniteScrollList,
+						...this.filteredMovie.slice(
+							this.infiniteScrollList.length,
+							this.infiniteScrollList.length + 4
+						),
+					];
+					this.busy = true;
+				}
+				this.busy = false;
+			}, 1000);
+		},
 		AddMovieItem() {
 			this.$store.dispatch('AddMovieItem', {
 				title: this.movie.title,
@@ -202,7 +227,9 @@ export default {
 		HeaderApp,
 		CardItem,
 	},
-	created() {},
+	created() {
+		// this.loadMore();
+	},
 };
 </script>
 <style lang="scss" scoped>

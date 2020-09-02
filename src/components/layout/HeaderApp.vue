@@ -27,7 +27,8 @@
 				</router-link>
 			</template>
 			<div v-else class="text-center mt-5 pt-5">
-				<b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+				loading...
+				<!-- <b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon> -->
 			</div>
 		</b-carousel>
 

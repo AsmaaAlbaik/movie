@@ -1,7 +1,7 @@
 <template>
 	<div class="home">
 		<header-app></header-app>
-		<div class="filters pt-5 pb-5">
+		<div class="filters bg-dark-gray-0  pt-5 pb-5">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12">
@@ -9,7 +9,7 @@
 							<label for="search">Search Term:</label>
 							<input
 								type="search"
-								class="form-control filters__custom-input"
+								class="form-control filters__custom-input bg-dark-gray-1 font-dark-gray-3 border-dark-gray-1"
 								v-model="search"
 							/>
 						</div>
@@ -18,7 +18,7 @@
 						<div class="group-input">
 							<label for="">genre:</label>
 							<select
-								class="form-control filters__custom-input"
+								class="form-control filters__custom-input bg-dark-gray-1 font-dark-gray-3 border-dark-gray-1"
 								v-model="selectedGenre"
 							>
 								<option value="">All</option>
@@ -32,7 +32,7 @@
 						<div class="group-input">
 							<label for="">Rating:</label>
 							<select
-								class="form-control filters__custom-input"
+								class="form-control filters__custom-input bg-dark-gray-1 font-dark-gray-3 border-dark-gray-1"
 								v-model="selectedRate"
 							>
 								<option value="">All</option>
@@ -46,7 +46,7 @@
 						<div class="group-input">
 							<label for="">year:</label>
 							<select
-								class="form-control filters__custom-input"
+								class="form-control filters__custom-input bg-dark-gray-1 font-dark-gray-3 border-dark-gray-1"
 								v-model="selectedYear"
 							>
 								<option value="">All</option>
@@ -61,12 +61,14 @@
 		</div>
 		<div class="container">
 			<div class="movies pt-5 pb-5">
-				<template v-if="!loading">
-					<div
-						class="row"
-						v-infinite-scroll="loadMore"
-						infinite-scroll-disabled="busy"
-						infinite-scroll-distance="4"
+				<div
+					class="row"
+					v-infinite-scroll="loadMore"
+					infinite-scroll-disabled="busy"
+					infinite-scroll-distance="10"
+				>
+					<template
+						v-if="infiniteScrollList.length != 0 && filteredMovie.length !== 0"
 					>
 						<template v-if="filteredMovie.length !== 0">
 							<card-item
@@ -77,36 +79,18 @@
 							</card-item>
 						</template>
 						<p class="text-center" v-else>no results found...</p>
-						<!-- <p class="text-center" v-if="busy === false">asmaa loading....</p> -->
-					</div>
-				</template>
-				<div v-else class="text-center">
-					loading...
-					<!-- <b-icon
-						icon="arrow-clockwise"
-						animation="spin"
-						font-scale="4"
-					></b-icon> -->
+					</template>
+					<p
+						class="text-center"
+						v-else-if="
+							infiniteScrollList.length == 0 && filteredMovie.length == 0
+						"
+					>
+						no results found...
+					</p>
+					<LoadingCard v-else />
 				</div>
-				<!-- <div
-					v-infinite-scroll="loadMore"
-					infinite-scroll-disabled="busy"
-					infinite-scroll-distance="10"
-				>
-					<div v-for="(d, index) in filteredMovie" :key="d.title + index">
-						{{ d.title }}
-					</div>
-				</div> -->
 			</div>
-			<!-- <input type="text" v-model="movie.title" />
-			<input type="text" v-model="movie.genre" />
-			<input type="text" v-model="movie.year" />
-			<input type="text" v-model="movie.stars" />
-			<input type="text" v-model="movie.description" />
-			<input type="file" @change="uploadImage" />
-			<span>big size</span>
-			<input type="file" @change="uploadBigImage" />
-			<button class="btn btn-success" @click="AddMovieItem">save</button> -->
 		</div>
 	</div>
 </template>
@@ -115,6 +99,7 @@
 // @ is an alias to /src
 import HeaderApp from '@/components/layout/HeaderApp';
 import CardItem from '@/components/movie/CardItem';
+import LoadingCard from '@/components/movie/LoadingCard';
 import { mapGetters } from 'vuex';
 import infiniteScroll from 'vue-infinite-scroll';
 var count = 0;
@@ -123,15 +108,6 @@ export default {
 	data() {
 		return {
 			busy: false,
-			movie: {
-				title: 'The Movie title',
-				genre: 'Drama',
-				year: '2015',
-				stars: '8',
-				description: 'short description about this movie',
-				image: '',
-				bigImage: '',
-			},
 			search: '',
 			selectedYear: '',
 			selectedGenre: '',
@@ -141,6 +117,8 @@ export default {
 	},
 	computed: {
 		...mapGetters(['getMoviesList', 'loading', 'genres', 'rates', 'years']),
+		// this computed property will filter the movies list by the movie title, year, rate and genre
+		// so it returned a new filtered movies
 		filteredMovie() {
 			return this.getMoviesList.filter((movie) => {
 				if (
@@ -159,20 +137,34 @@ export default {
 	},
 	directives: { infiniteScroll },
 	watch: {
-		getMoviesList () {
-			// console.log("asmaaaaaaaaaaaaaaa")
-			this.filteredMovie;
-			this.loadMore();
-		}
+		selectedGenre() {
+			this.resetAndRefilter();
+		},
+		selectedRate() {
+			this.resetAndRefilter();
+		},
+		selectedYear() {
+			this.resetAndRefilter();
+		},
+		search() {
+			this.resetAndRefilter();
+		},
 	},
 	methods: {
+		// this method use for enable the infinite scroll
 		loadMore: function() {
+			// infinite scroll will be disabled if the value of this attribute is true.
 			this.busy = true;
 			setTimeout(() => {
-				// console.log('asmaa');
+				/* we can solve the infinite scrolling in another way if we have an api 
+					divided by page and every time the loadMore function fired we send another
+					request to get the next page data and push it in our array
+				*/
+				// if the infiniteScrollList is empty at the first time I get the first slice of data from filteredMovie
 				if (this.infiniteScrollList.length == 0) {
 					this.infiniteScrollList = [...this.filteredMovie.slice(0, 4)];
 				}
+				// if we get all the data form filteredMovie array we stop scrolling and loading and pushing new data to the infiniteScrollList array 
 				if (this.infiniteScrollList.length != this.filteredMovie.length) {
 					this.infiniteScrollList = [
 						...this.infiniteScrollList,
@@ -181,73 +173,33 @@ export default {
 							this.infiniteScrollList.length + 4
 						),
 					];
-					this.busy = true;
+				} else {
+					this.busy = false;
 				}
 				this.busy = false;
 			}, 1000);
 		},
-		AddMovieItem() {
-			this.$store.dispatch('AddMovieItem', {
-				title: this.movie.title,
-				genre: this.movie.genre,
-				year: this.movie.year,
-				stars: this.movie.stars,
-				description: this.movie.description,
-				image: this.movie.image,
-				bigImage: this.movie.bigImage,
-			});
-		},
-		uploadImage(event) {
-			const files = event.target.files;
-			let filename = files[0].name;
-			// check if the uploaded file dose have a valid extention
-			if (filename.lastIndexOf('.') <= 0) {
-				return alert('Please add a valid file !');
-			}
-			// translate a bainary file to string which I can uploaded
-			const fileReader = new FileReader();
-			fileReader.addEventListener('load', () => {
-				this.movie.image = fileReader.result;
-				// console.log(this.imageUrl)
-			});
-			fileReader.readAsDataURL(files[0]);
-			this.movie.image = files[0];
-		},
-		uploadBigImage(event) {
-			const files = event.target.files;
-			let filename = files[0].name;
-			// check if the uploaded file dose have a valid extention
-			if (filename.lastIndexOf('.') <= 0) {
-				return alert('Please add a valid file !');
-			}
-			// translate a bainary file to string which I can uploaded
-			const fileReader = new FileReader();
-			fileReader.addEventListener('load', () => {
-				this.movie.bigImage = fileReader.result;
-				// console.log(this.imageUrl)
-			});
-			fileReader.readAsDataURL(files[0]);
-			this.movie.bigImage = files[0];
+		// we use this function when the user use the filter
+		resetAndRefilter() {
+			this.filteredMovie;
+			this.infiniteScrollList = [];
+			this.loadMore();
 		},
 	},
 	components: {
 		HeaderApp,
 		CardItem,
+		LoadingCard,
 	},
-	created() {
-		// this.loadMore();
-	},
+	created() {},
 };
 </script>
 <style lang="scss" scoped>
 .filters {
-	background-color: #171717;
-	&__custom-input,
-	&__custom-input:focus {
-		background-color: #1d1d1d;
-		border: 1px solid transparent;
-		color: #a2a2a2;
-		&::placeholder {
+	&__custom-input {
+		&:focus {
+			background-color: #1d1d1d;
+			border: 1px solid transparent;
 		}
 	}
 }

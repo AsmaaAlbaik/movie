@@ -2,6 +2,7 @@
 	<router-link
 		:to="'/movie-details/' + movie.id"
 		class="col-lg-3 col-md-4 col-sm-6"
+		:id="'movie'+movie.id"
 	>
 		<b-card
 			:title="movie.title"
@@ -41,6 +42,7 @@ a {
 	border: none;
 	border-radius: 1rem;
 	background: transparent;
+	margin: auto;
 	.card-img,
 	.card-img-top,
 	.card-img-bottom {

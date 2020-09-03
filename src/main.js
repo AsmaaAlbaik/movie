@@ -16,6 +16,7 @@ new Vue({
   router,
   store,
   created() {
+    // initialize firebase
     firebase.initializeApp({
       apiKey: "AIzaSyD9BCTm5h_9YHjYuf_W53JkqDZUWk-EaWY",
       authDomain: "movies-app-b71ef.firebaseapp.com",
@@ -26,6 +27,7 @@ new Vue({
       appId: "1:711332877858:web:6f0ce0042d70708b9e9c7b",
       measurementId: "G-JV28HTZR3P"
     });
+    // fetch the data by sending http request using firebase SDK
     this.$store.dispatch('fetchMovieList');
   },
   render: h => h(App)

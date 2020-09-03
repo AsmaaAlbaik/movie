@@ -41,8 +41,14 @@ export default {
 		};
 	},
 	computed: {
+		// this computed property will excecute loadedMovie getter 
+		// whitch filters the data and return one specific item depends on item id
+		/* if we have an API to get the details by dispatch another action and send ID to URL parameter
+			then return back the details is better than use filter the excistnce data 
+			so we don't return all data in just one API to decrease loading time
+			but here I don't have APIs to use I just use my basic knowlege in firbase
+		*/   
 		loadedMovie() {
-			console.log(this.$store.getters.loadedMovie(this.id))
 			return this.$store.getters.loadedMovie(this.id);
 		},
 	},

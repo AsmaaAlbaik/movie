@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
 		<navbar-app></navbar-app>
-		<transition name="fade">
+		<transition name="fade" mode="out-in">
 			<router-view />
 		</transition>
 		<footer-app></footer-app>
@@ -16,16 +16,19 @@ export default {
 		NavbarApp,
 		FooterApp,
 	},
+	created() {
+		//
+	},
 };
 </script>
 
 <style lang="scss">
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+	transition: opacity 0.5s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
+	opacity: 0;
 }
 #app {
 	background: #1d1d1d;

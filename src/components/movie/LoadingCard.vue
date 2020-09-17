@@ -21,5 +21,6 @@
 	border: 2px solid;
 	border-radius: 1rem;
 	height: 380px;
+	margin-bottom: 10px;
 }
 </style>
